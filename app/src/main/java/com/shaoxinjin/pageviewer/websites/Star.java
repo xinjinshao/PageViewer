@@ -26,7 +26,7 @@ public class Star implements WebOperation {
             map.put(MainPage.IMAGE_KEY, record.picUrl);
             map.put(MainPage.TEXT_KEY, record.name);
             map.put(MainPage.URL_KEY, record.url);
-            mMainPage.updateGridView(map);
+            mMainPage.updateCoverView(map);
         }
     }
 

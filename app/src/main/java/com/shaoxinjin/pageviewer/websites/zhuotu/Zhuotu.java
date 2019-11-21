@@ -72,7 +72,7 @@ public class Zhuotu extends BaseWebOperation {
                 map.put(MainPage.IMAGE_KEY, imgSrc);
                 map.put(MainPage.URL_KEY, href);
                 map.put(MainPage.TYPE_KEY, Zhuotu.class.getSimpleName());
-                mMainPage.updateGridView(map);
+                mMainPage.updateCoverView(map);
             }
         }
     }

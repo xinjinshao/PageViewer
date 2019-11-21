@@ -52,7 +52,7 @@ public class MainPage extends AppCompatActivity
     public static final String TYPE_KEY = "type_key";
     public static final String CLASS_KEY = "class_key";
 
-    private RecyclerViewAdapter mRecyclerViewAdapter;
+    private CoverViewAdapter mCoverViewAdapter;
     private ArrayList<HashMap<String, String>> mList = new ArrayList<>();
     private int mCurrentID;
     private WebOperation mWebOperation;
@@ -104,7 +104,7 @@ public class MainPage extends AppCompatActivity
                 inSearch = false;
                 mList.clear();
                 updateSearchPercentage(0);
-                mRecyclerViewAdapter.notifyDataSetChanged();
+                mCoverViewAdapter.notifyDataSetChanged();
                 mWebOperation.updatePage();
             }
         } else {
@@ -117,7 +117,7 @@ public class MainPage extends AppCompatActivity
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main_page, menu);
         initSearchView(menu.findItem(R.id.action_search));
-        initGridView();
+        initCoverView();
         initWebOperation();
         return true;
     }
@@ -130,7 +130,7 @@ public class MainPage extends AppCompatActivity
         }
         inSearch = false;
         mList.clear();
-        mRecyclerViewAdapter.notifyDataSetChanged();
+        mCoverViewAdapter.notifyDataSetChanged();
         updateSearchPercentage(0);
 
         mCurrentID = item.getItemId();
@@ -183,7 +183,7 @@ public class MainPage extends AppCompatActivity
                 if (mWebOperation != null && isNotStarPage()) {
                     inSearch = true;
                     mList.clear();
-                    mRecyclerViewAdapter.notifyDataSetChanged();
+                    mCoverViewAdapter.notifyDataSetChanged();
                     mWebOperation.searchPage(s);
                 }
                 return false;
@@ -196,10 +196,10 @@ public class MainPage extends AppCompatActivity
         });
     }
 
-    private void initGridView() {
-        RecyclerView recyclerView = findViewById(R.id.content_grid_view);
-        mRecyclerViewAdapter = new RecyclerViewAdapter(MainPage.this);
-        recyclerView.setAdapter(mRecyclerViewAdapter);
+    private void initCoverView() {
+        RecyclerView recyclerView = findViewById(R.id.content_cover_view);
+        mCoverViewAdapter = new CoverViewAdapter(MainPage.this);
+        recyclerView.setAdapter(mCoverViewAdapter);
         int column = getResources().getInteger(R.integer.grid_columns);
         final StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(column, StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
@@ -215,28 +215,28 @@ public class MainPage extends AppCompatActivity
         dbManager.deleteRecord(mList.get(index).get(URL_KEY));
 
         mList.remove(mList.get(index));
-        mRecyclerViewAdapter.notifyDataSetChanged();
+        mCoverViewAdapter.notifyDataSetChanged();
 
         Toast toast = Toast.makeText(this, getResources().getString(R.string.delete_star_success), Toast.LENGTH_SHORT);
         toast.show();
     }
 
-    class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.RecyclerViewHolder> {
+    class CoverViewAdapter extends RecyclerView.Adapter<CoverViewAdapter.CoverViewHolder> {
         private Context mAdapterContext;
 
-        private RecyclerViewAdapter(Context context) {
+        private CoverViewAdapter(Context context) {
             mAdapterContext = context;
             setHasStableIds(true);
         }
 
         @Override
-        public RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(mAdapterContext).inflate(R.layout.grid_item, parent, false);
-            return new RecyclerViewHolder(view);
+        public CoverViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(mAdapterContext).inflate(R.layout.cover_item, parent, false);
+            return new CoverViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(RecyclerViewHolder viewHolder, int position) {
+        public void onBindViewHolder(CoverViewHolder viewHolder, int position) {
             HashMap<String, String> map = mList.get(position);
             if (map == null) {
                 Log.d(TAG, "map is null");
@@ -254,7 +254,7 @@ public class MainPage extends AppCompatActivity
             setMenuListener(viewHolder, position);
         }
 
-        private void setOnClickListener(RecyclerViewHolder viewHolder, final int pos) {
+        private void setOnClickListener(CoverViewHolder viewHolder, final int pos) {
             viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -277,7 +277,7 @@ public class MainPage extends AppCompatActivity
             });
         }
 
-        private void setMenuListener(RecyclerViewHolder viewHolder, final int pos) {
+        private void setMenuListener(CoverViewHolder viewHolder, final int pos) {
             viewHolder.itemView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
                 @Override
                 public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -311,12 +311,12 @@ public class MainPage extends AppCompatActivity
             return position;
         }
 
-        class RecyclerViewHolder extends RecyclerView.ViewHolder {
+        class CoverViewHolder extends RecyclerView.ViewHolder {
             private View itemView;
             private ImageView imageView;
             private TextView textView;
 
-            RecyclerViewHolder(View view) {
+            CoverViewHolder(View view) {
                 super(view);
                 itemView = view;
                 imageView = view.findViewById(R.id.image_item);
@@ -325,12 +325,12 @@ public class MainPage extends AppCompatActivity
         }
     }
 
-    public void updateGridView(final HashMap<String, String> map) {
+    public void updateCoverView(final HashMap<String, String> map) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 mList.add(map);
-                mRecyclerViewAdapter.notifyDataSetChanged();
+                mCoverViewAdapter.notifyDataSetChanged();
             }
         });
     }

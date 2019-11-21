@@ -62,7 +62,7 @@ public class Xixi extends BaseWebOperation {
                 map.put(MainPage.IMAGE_KEY, imgSrc);
                 map.put(MainPage.URL_KEY, URL_BASE + href);
                 map.put(MainPage.TYPE_KEY, Xixi.class.getSimpleName());
-                mMainPage.updateGridView(map);
+                mMainPage.updateCoverView(map);
             }
         }
     }

@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ViewPage extends AppCompatActivity {
     private static final String TAG = Util.PREFIX + ViewPage.class.getSimpleName();
-    private ListViewAdapter mListViewAdapter;
+    private ImageViewAdapter mImageViewAdapter;
     private static ThreadPoolExecutor mThreadPoolExecutor;
     private ArrayList<String> mList = new ArrayList<>();
     private int mCurrentPage;
@@ -47,10 +47,10 @@ public class ViewPage extends AppCompatActivity {
             mThreadPoolExecutor = new ThreadPoolExecutor(1, 1, 5,
                     TimeUnit.SECONDS, new LinkedBlockingDeque<Runnable>(1024));
         }
-        ListView mListView = findViewById(R.id.content_list_view);
-        mListViewAdapter = new ListViewAdapter(ViewPage.this);
-        mListView.setAdapter(mListViewAdapter);
-        mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+        ListView imageView = findViewById(R.id.content_image_view);
+        mImageViewAdapter = new ImageViewAdapter(ViewPage.this);
+        imageView.setAdapter(mImageViewAdapter);
+        imageView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
                 if (view.getLastVisiblePosition() == view.getCount() - 1) {
@@ -63,7 +63,7 @@ public class ViewPage extends AppCompatActivity {
 
             }
         });
-        registerForContextMenu(mListView);
+        registerForContextMenu(imageView);
         Intent intent = getIntent();
         mCurrentType = intent.getStringExtra(MainPage.TYPE_KEY);
         mCurrentName = intent.getStringExtra(MainPage.TEXT_KEY);
@@ -74,7 +74,7 @@ public class ViewPage extends AppCompatActivity {
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        if (v.getId() == R.id.content_list_view) {
+        if (v.getId() == R.id.content_image_view) {
             getMenuInflater().inflate(R.menu.viewpage_menu, menu);
         }
     }
@@ -96,13 +96,13 @@ public class ViewPage extends AppCompatActivity {
     }
 
     private void downloadPic(int pageNum) {
-        String url = (String) mListViewAdapter.getItem(pageNum);
+        String url = (String) mImageViewAdapter.getItem(pageNum);
         Util.downloadPic(this, url);
     }
 
     private void starPicSet(int pageNum) {
         //this.deleteDatabase("PageViewer.db");
-        String url = (String) mListViewAdapter.getItem(pageNum);
+        String url = (String) mImageViewAdapter.getItem(pageNum);
         DbManager dbManager = DbManager.getInstance(this);
         dbManager.insertRecord(mCurrentType, mCurrentName, mCurrentUrl, url);
         Toast toast = Toast.makeText(this, getResources().getString(R.string.star_success), Toast.LENGTH_SHORT);
@@ -125,7 +125,7 @@ public class ViewPage extends AppCompatActivity {
                             return;
                         }
                         List<String> list = Arrays.asList(picUrl);
-                        updateListView(list);
+                        updateImageView(list);
                     }
                 } catch (Exception e) {
                     Log.d(TAG, "exception in updateSomeImages is " + e.getClass());
@@ -135,10 +135,10 @@ public class ViewPage extends AppCompatActivity {
         });
     }
 
-    class ListViewAdapter extends BaseAdapter {
+    class ImageViewAdapter extends BaseAdapter {
         private Context mAdapterContext;
 
-        private ListViewAdapter(Context context) {
+        private ImageViewAdapter(Context context) {
             mAdapterContext = context;
         }
 
@@ -159,14 +159,14 @@ public class ViewPage extends AppCompatActivity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            ListViewHolder viewHolder;
+            ImageViewHolder viewHolder;
             if (convertView == null) {
-                viewHolder = new ListViewHolder();
-                convertView = LayoutInflater.from(mAdapterContext).inflate(R.layout.list_item, null);
+                viewHolder = new ImageViewHolder();
+                convertView = LayoutInflater.from(mAdapterContext).inflate(R.layout.image_item, null);
                 viewHolder.imageView = convertView.findViewById(R.id.image_item);
                 convertView.setTag(viewHolder);
             } else {
-                viewHolder = (ListViewHolder) convertView.getTag();
+                viewHolder = (ImageViewHolder) convertView.getTag();
             }
 
             String imageData = mList.get(position);
@@ -175,17 +175,17 @@ public class ViewPage extends AppCompatActivity {
             return convertView;
         }
 
-        class ListViewHolder {
+        class ImageViewHolder {
             private ImageView imageView;
         }
     }
 
-    public void updateListView(final List<String> list) {
+    public void updateImageView(final List<String> list) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 mList.addAll(list);
-                mListViewAdapter.notifyDataSetChanged();
+                mImageViewAdapter.notifyDataSetChanged();
             }
         });
     }

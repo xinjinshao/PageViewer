@@ -17,7 +17,7 @@
         android:max="100" />
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/content_grid_view"
+        android:id="@+id/content_cover_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintTop_toTopOf="@id/search_progress">
