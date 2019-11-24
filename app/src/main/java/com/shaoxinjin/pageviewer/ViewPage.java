@@ -5,17 +5,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.shaoxinjin.pageviewer.db.DbManager;
@@ -38,6 +36,7 @@ public class ViewPage extends AppCompatActivity {
     private String mCurrentType;
     private String mCurrentUrl;
     private WebOperationView mWebOperationView;
+    private int mCurrentColNum;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,29 +47,30 @@ public class ViewPage extends AppCompatActivity {
             mThreadPoolExecutor = new ThreadPoolExecutor(1, 1, 5,
                     TimeUnit.SECONDS, new LinkedBlockingDeque<Runnable>(1024));
         }
-        ListView imageView = findViewById(R.id.content_image_view);
+
+        final RecyclerView recyclerView = findViewById(R.id.content_image_view);
         mImageViewAdapter = new ImageViewAdapter(ViewPage.this);
-        imageView.setAdapter(mImageViewAdapter);
-        imageView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-                if (view.getLastVisiblePosition() == view.getCount() - 1) {
-                    updateImage();
-                }
-            }
+        recyclerView.setAdapter(mImageViewAdapter);
+        mCurrentColNum = 1;
+        final StaggeredGridLayoutManager layoutManager =
+            new StaggeredGridLayoutManager(mCurrentColNum, StaggeredGridLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
+        registerForContextMenu(recyclerView);
 
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-
-            }
-        });
         FloatingActionButton fab = findViewById(R.id.fab_table);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (mCurrentColNum == 1) {
+                    mCurrentColNum = getResources().getInteger(R.integer.grid_columns);
+                } else {
+                    mCurrentColNum = 1;
+                }
+                final StaggeredGridLayoutManager layoutManager =
+                    new StaggeredGridLayoutManager(mCurrentColNum, StaggeredGridLayoutManager.VERTICAL);
+                recyclerView.setLayoutManager(layoutManager);
             }
         });
-        registerForContextMenu(imageView);
         Intent intent = getIntent();
         mCurrentType = intent.getStringExtra(MainPage.TYPE_KEY);
         mCurrentName = intent.getStringExtra(MainPage.TEXT_KEY);
@@ -79,39 +79,13 @@ public class ViewPage extends AppCompatActivity {
         updateImage();
     }
 
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        if (v.getId() == R.id.content_image_view) {
-            getMenuInflater().inflate(R.menu.viewpage_menu, menu);
-        }
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        int menuItemIndex = item.getItemId();
-        Log.d(TAG, "menuItem is " + menuItemIndex);
-        switch (menuItemIndex) {
-            case R.id.viewpage_download_pic:
-                downloadPic(info.position);
-                break;
-            case R.id.viewpage_star:
-                starPicSet(info.position);
-                break;
-        }
-        return true;
-    }
-
     private void downloadPic(int pageNum) {
-        String url = (String) mImageViewAdapter.getItem(pageNum);
-        Util.downloadPic(this, url);
+        Util.downloadPic(this, mList.get(pageNum));
     }
 
     private void starPicSet(int pageNum) {
-        //this.deleteDatabase("PageViewer.db");
-        String url = (String) mImageViewAdapter.getItem(pageNum);
         DbManager dbManager = DbManager.getInstance(this);
-        dbManager.insertRecord(mCurrentType, mCurrentName, mCurrentUrl, url);
+        dbManager.insertRecord(mCurrentType, mCurrentName, mCurrentUrl, mList.get(pageNum));
         Toast toast = Toast.makeText(this, getResources().getString(R.string.star_success), Toast.LENGTH_SHORT);
         toast.show();
     }
@@ -125,7 +99,7 @@ public class ViewPage extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    for (int i = 1; i <= 3; i++) {
+                    while(true) {
                         mCurrentPage++;
                         String[] picUrl = mWebOperationView.getPicUrl(mCurrentUrl, mCurrentPage);
                         if (picUrl == null) {
@@ -142,7 +116,7 @@ public class ViewPage extends AppCompatActivity {
         });
     }
 
-    class ImageViewAdapter extends BaseAdapter {
+    class ImageViewAdapter extends RecyclerView.Adapter<ImageViewAdapter.ImageViewHolder> {
         private Context mAdapterContext;
 
         private ImageViewAdapter(Context context) {
@@ -150,13 +124,8 @@ public class ViewPage extends AppCompatActivity {
         }
 
         @Override
-        public int getCount() {
+        public int getItemCount() {
             return mList.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return mList.get(position);
         }
 
         @Override
@@ -165,25 +134,56 @@ public class ViewPage extends AppCompatActivity {
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ImageViewHolder viewHolder;
-            if (convertView == null) {
-                viewHolder = new ImageViewHolder();
-                convertView = LayoutInflater.from(mAdapterContext).inflate(R.layout.image_item, null);
-                viewHolder.imageView = convertView.findViewById(R.id.image_item);
-                convertView.setTag(viewHolder);
-            } else {
-                viewHolder = (ImageViewHolder) convertView.getTag();
-            }
-
-            String imageData = mList.get(position);
-            Util.setPicFromUrl(ViewPage.this, imageData, viewHolder.imageView);
-
-            return convertView;
+        public ImageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(mAdapterContext).inflate(R.layout.image_item, parent, false);
+            return new ImageViewHolder(view);
         }
 
-        class ImageViewHolder {
+        @Override
+        public void onBindViewHolder(ImageViewHolder viewHolder, int position) {
+            String imageData = mList.get(position);
+            if (imageData != null) {
+                Util.setPicFromUrl(ViewPage.this, imageData, viewHolder.imageView);
+            }
+            setMenuListener(viewHolder, position);
+        }
+
+        private void setMenuListener(ImageViewHolder viewHolder, final int pos) {
+            viewHolder.itemView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+                @Override
+                public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+                    getMenuInflater().inflate(R.menu.viewpage_menu, menu);
+                    for (int index = 0; index < menu.size(); index++) {
+                        MenuItem item = menu.getItem(index);
+                        if (item.getItemId() == R.id.viewpage_download_pic) {
+                            item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                                @Override
+                                public boolean onMenuItemClick(MenuItem item) {
+                                    downloadPic(pos);
+                                    return false;
+                                }
+                            });
+                        } else if (item.getItemId() == R.id.viewpage_star) {
+                            item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                                @Override
+                                public boolean onMenuItemClick(MenuItem item) {
+                                    starPicSet(pos);
+                                    return false;
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+        }
+
+        class ImageViewHolder extends RecyclerView.ViewHolder {
             private ImageView imageView;
+
+            ImageViewHolder(View view) {
+                super(view);
+                imageView = view.findViewById(R.id.image_item);
+            }
         }
     }
 
