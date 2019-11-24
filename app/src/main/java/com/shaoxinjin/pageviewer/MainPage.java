@@ -1,7 +1,9 @@
 package com.shaoxinjin.pageviewer;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -22,6 +24,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -119,11 +122,15 @@ public class MainPage extends AppCompatActivity
         initSearchView(menu.findItem(R.id.action_search));
         initCoverView();
         initWebOperation();
+        initUserInfo();
         return true;
     }
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+        if (!userValid()) {
+            return true;
+        }
         // Handle navigation view item clicks here.
         if (mCurrentID == item.getItemId()) {
             return true;
@@ -144,6 +151,31 @@ public class MainPage extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void initUserInfo() {
+        ImageView imageView = findViewById(R.id.user_icon);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final EditText inputServer = new EditText(MainPage.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainPage.this);
+                builder.setTitle("Input User Name").setIcon(android.R.drawable.ic_dialog_info).setView(inputServer);
+                builder.setNegativeButton("Cancel", null);
+                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        TextView textView = findViewById(R.id.user_name);
+                        textView.setText(inputServer.getText());
+                    }
+                });
+                builder.show();
+            }
+        });
+    }
+
+    private boolean userValid() {
+        TextView textView = findViewById(R.id.user_name);
+        return getString(R.string.user_control).equals(textView.getText().toString());
     }
 
     private boolean isNotStarPage() {
