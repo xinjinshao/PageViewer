@@ -76,7 +76,7 @@ public class MainPage extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab_more);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

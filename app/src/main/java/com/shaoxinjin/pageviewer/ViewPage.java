@@ -3,6 +3,7 @@ package com.shaoxinjin.pageviewer;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -61,6 +62,12 @@ public class ViewPage extends AppCompatActivity {
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 
+            }
+        });
+        FloatingActionButton fab = findViewById(R.id.fab_table);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
             }
         });
         registerForContextMenu(imageView);
