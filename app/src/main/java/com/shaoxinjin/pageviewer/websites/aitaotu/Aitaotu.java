@@ -1,4 +1,6 @@
-package com.shaoxinjin.pageviewer.websites.semanhua;
+package com.shaoxinjin.pageviewer.websites.aitaotu;
+
+import android.util.Log;
 
 import com.shaoxinjin.pageviewer.MainPage;
 import com.shaoxinjin.pageviewer.Util;
@@ -12,8 +14,8 @@ import org.jsoup.select.Elements;
 import java.util.HashMap;
 import java.util.concurrent.ThreadPoolExecutor;
 
-public class Semanhua extends BaseWebOperation {
-    public Semanhua(MainPage mainPage, ThreadPoolExecutor threadPoolExecutor) {
+public class Aitaotu extends BaseWebOperation {
+    public Aitaotu(MainPage mainPage, ThreadPoolExecutor threadPoolExecutor) {
         super(mainPage, threadPoolExecutor);
     }
 
@@ -24,23 +26,24 @@ public class Semanhua extends BaseWebOperation {
 
     @Override
     public void initWebInfo() {
-        URL_BASE = "https://m.wujiecaola.cc";
+        URL_BASE = "https://m.aitaotu.com";
         URL_END = ".html";
         mSectionInfo = new SectionInfo[]{
-                new SectionInfo("/meinv/list_8_", 1, 0)};
-        mWebOperationView = new SemanhuaView();
+            new SectionInfo("/guonei/list_", 1, 0)};
+        mWebOperationView = new AitaotuView();
     }
 
     @Override
     public int getTotalPageNum(String url) throws Exception {
         Document doc = Util.getDocument(url);
-        return doc.select("select.paging-select option").size();
+        String pageNum = doc.selectFirst("div.clearfix.article-page a").text();
+        return pageNum == null ? 0 : Integer.valueOf(pageNum.split("/")[1]);
     }
 
     @Override
     public void setListFromHtmlTable(String url, String s) throws Exception {
         Document doc = Util.getDocument(url);
-        Elements aTags = doc.select("ul.pic a");
+        Elements aTags = doc.select("div.libox a");
         for (Element e : aTags) {
             String href = e.attr("href");
             Element img = e.selectFirst("img");
@@ -54,11 +57,11 @@ public class Semanhua extends BaseWebOperation {
                 if (!s.equals("") && !map.get(MainPage.TEXT_KEY).contains(s)) {
                     continue;
                 }
-                /* covers in this website are wrong, use first pic as cover */
-                String[] imgSrc = mWebOperationView.getPicUrl(URL_BASE + href, 1);
-                map.put(MainPage.IMAGE_KEY, imgSrc[0]);
+                String imgSrc = img.attr("data-original");
+                Log.d("PICNO", imgSrc);
+                map.put(MainPage.IMAGE_KEY, imgSrc);
                 map.put(MainPage.URL_KEY, URL_BASE + href);
-                map.put(MainPage.TYPE_KEY, Semanhua.class.getSimpleName());
+                map.put(MainPage.TYPE_KEY, Aitaotu.class.getSimpleName());
                 mMainPage.updateCoverView(map);
             }
         }
