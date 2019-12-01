@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
@@ -80,10 +81,6 @@ public class ViewPage extends AppCompatActivity {
         updateImage();
     }
 
-    private void downloadPic(int pageNum) {
-        Util.downloadPic(this, mList.get(pageNum));
-    }
-
     private void starPicSet(int pageNum) {
         DbManager dbManager = DbManager.getInstance(this);
         dbManager.insertRecord(mCurrentType, mCurrentName, mCurrentUrl, mList.get(pageNum));
@@ -135,13 +132,14 @@ public class ViewPage extends AppCompatActivity {
         }
 
         @Override
-        public ImageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public @NonNull
+        ImageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(mAdapterContext).inflate(R.layout.image_item, parent, false);
             return new ImageViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(ImageViewHolder viewHolder, int position) {
+        public void onBindViewHolder(@NonNull ImageViewHolder viewHolder, int position) {
             String imageData = mList.get(position);
             if (imageData != null) {
                 Util.setPicFromUrl(ViewPage.this, imageData, viewHolder.imageView);
@@ -156,15 +154,7 @@ public class ViewPage extends AppCompatActivity {
                     getMenuInflater().inflate(R.menu.viewpage_menu, menu);
                     for (int index = 0; index < menu.size(); index++) {
                         MenuItem item = menu.getItem(index);
-                        if (item.getItemId() == R.id.viewpage_download_pic) {
-                            item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                                @Override
-                                public boolean onMenuItemClick(MenuItem item) {
-                                    downloadPic(pos);
-                                    return false;
-                                }
-                            });
-                        } else if (item.getItemId() == R.id.viewpage_star) {
+                        if (item.getItemId() == R.id.viewpage_star) {
                             item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                                 @Override
                                 public boolean onMenuItemClick(MenuItem item) {

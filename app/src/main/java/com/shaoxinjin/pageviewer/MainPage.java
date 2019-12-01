@@ -1,11 +1,9 @@
 package com.shaoxinjin.pageviewer;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -20,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -91,12 +90,6 @@ public class MainPage extends AppCompatActivity
                 }
             }
         });
-
-        int REQUEST_CODE_CONTACT = 101;
-        String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        if (this.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            this.requestPermissions(permissions, REQUEST_CODE_CONTACT);
-        }
     }
 
     @Override
@@ -129,7 +122,7 @@ public class MainPage extends AppCompatActivity
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         if (!userValid()) {
             return true;
         }
@@ -267,13 +260,13 @@ public class MainPage extends AppCompatActivity
         }
 
         @Override
-        public CoverViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public @NonNull CoverViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(mAdapterContext).inflate(R.layout.cover_item, parent, false);
             return new CoverViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(CoverViewHolder viewHolder, int position) {
+        public void onBindViewHolder(@NonNull CoverViewHolder viewHolder, int position) {
             HashMap<String, String> map = mList.get(position);
             if (map == null) {
                 Log.d(TAG, "map is null");
