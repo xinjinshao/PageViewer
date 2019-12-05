@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 public class ViewPage extends AppCompatActivity {
     private static final String TAG = Util.PREFIX + ViewPage.class.getSimpleName();
     private ImageViewAdapter mImageViewAdapter;
-    private static ThreadPoolExecutor mThreadPoolExecutor;
+    private ThreadPoolExecutor mThreadPoolExecutor;
     private ArrayList<String> mList = new ArrayList<>();
     private int mCurrentPage;
     private String mCurrentName;
@@ -79,6 +79,12 @@ public class ViewPage extends AppCompatActivity {
         mCurrentUrl = intent.getStringExtra(MainPage.URL_KEY);
         mWebOperationView = intent.getParcelableExtra(MainPage.CLASS_KEY);
         updateImage();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        mThreadPoolExecutor.shutdownNow();
     }
 
     private void starPicSet(int pageNum) {
