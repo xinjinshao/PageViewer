@@ -3,9 +3,6 @@ package com.shaoxinjin.pageviewer;
 import android.content.Context;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -48,11 +45,10 @@ public class Util {
     }
 
     static void setPicFromUrl(Context context, String url, ImageView imageView) {
-        RequestOptions options = new RequestOptions().placeholder(R.drawable.ic_loading);
         if (url.endsWith("gif")) {
-            Glide.with(context).asGif().load(url).apply(options).into(imageView);
+            GlideApp.with(context).asGif().load(url).placeholder(R.drawable.ic_loading).into(imageView);
         } else {
-            Glide.with(context).load(url).apply(options).into(imageView);
+            GlideApp.with(context).load(url).placeholder(R.drawable.ic_loading).into(imageView);
         }
     }
 }
