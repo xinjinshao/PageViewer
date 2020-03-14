@@ -14,7 +14,7 @@ public class WuzhiView implements WebOperationView {
             return null;
         }
         Document doc = Util.getDocument(firstPicUrl);
-        Elements elements = doc.select("div.picContent img");
+        Elements elements = doc.select("div.box.pic_novel img");
         String[] srcs = new String[elements.size()];
         for (int i = 0; i < srcs.length; i++) {
             srcs[i] = elements.get(i).attr("src").trim();

@@ -1,9 +1,12 @@
 package com.shaoxinjin.pageviewer.websites.wuzhi;
 
+import android.util.Log;
+
 import com.shaoxinjin.pageviewer.MainPage;
 import com.shaoxinjin.pageviewer.Util;
 import com.shaoxinjin.pageviewer.websites.BaseWebOperation;
 import com.shaoxinjin.pageviewer.websites.WebOperationView;
+
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -23,10 +26,11 @@ public class Wuzhi extends BaseWebOperation {
 
     @Override
     public void initWebInfo() {
-        URL_BASE = "http://www.mmee33.com";
-        URL_END = ".html";
-        mSectionInfo = new SectionInfo[]{
-            new SectionInfo("/raad_6_", 1, 0)};
+        String url = "http://www.wuzhimm.com";
+        String[] sections = new String[] {
+            "/dvyd-6-"
+        };
+        initWebInfo(url, sections, Wuzhi.class.getSimpleName());
         mWebOperationView = new WuzhiView();
     }
 
@@ -34,13 +38,14 @@ public class Wuzhi extends BaseWebOperation {
     public int getTotalPageNum(String url) throws Exception {
         Document doc = Util.getDocument(url);
         String pageNum = doc.selectFirst("a.end").text();
+        Log.d(Util.PREFIX, "pageNum " + pageNum);
         return pageNum == null ? 0 : Integer.valueOf(pageNum);
     }
 
     @Override
     public void setListFromHtmlTable(String url, String s) throws Exception {
         Document doc = Util.getDocument(url);
-        Elements aTags = doc.select("ul.textList a");
+        Elements aTags = doc.select("div.box.list.channel a");
         for (Element e : aTags) {
             String name = e.text();
             HashMap<String, String> map = new HashMap<>();

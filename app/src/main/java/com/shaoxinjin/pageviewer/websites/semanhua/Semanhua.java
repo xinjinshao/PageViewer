@@ -2,6 +2,8 @@ package com.shaoxinjin.pageviewer.websites.semanhua;
 
 import com.shaoxinjin.pageviewer.MainPage;
 import com.shaoxinjin.pageviewer.Util;
+import com.shaoxinjin.pageviewer.db.DbManager;
+import com.shaoxinjin.pageviewer.db.DbWebRecord;
 import com.shaoxinjin.pageviewer.websites.BaseWebOperation;
 import com.shaoxinjin.pageviewer.websites.WebOperationView;
 
@@ -24,10 +26,11 @@ public class Semanhua extends BaseWebOperation {
 
     @Override
     public void initWebInfo() {
-        URL_BASE = "https://m.wujiecaola.cc";
-        URL_END = ".html";
-        mSectionInfo = new SectionInfo[]{
-                new SectionInfo("/meinv/list_8_", 1, 0)};
+        String url = "https://m.wujiecaola.cc";
+        String[] sections = new String[] {
+            "/meinv/list_8_",
+        };
+        initWebInfo(url, sections, Semanhua.class.getSimpleName());
         mWebOperationView = new SemanhuaView();
     }
 

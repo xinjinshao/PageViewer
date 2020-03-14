@@ -10,8 +10,6 @@ import com.shaoxinjin.pageviewer.Util;
 
 import java.util.ArrayList;
 
-import static com.shaoxinjin.pageviewer.db.DbHelper.DATABASE_TABLE_NAME;
-
 public class DbManager {
     private static final String TAG = Util.PREFIX + DbManager.class.getSimpleName();
     private SQLiteDatabase db;
@@ -48,16 +46,16 @@ public class DbManager {
         c.put(DbHelper.FIELD_NAME, name);
         c.put(DbHelper.FIELD_URL, url);
         c.put(DbHelper.FIELD_PICURL, picUrl);
-        db.insert(DATABASE_TABLE_NAME, "", c);
+        db.insert(DbHelper.DATABASE_TABLE_NAME, "", c);
     }
 
     public void deleteRecord(String url) {
-        db.delete(DATABASE_TABLE_NAME, DbHelper.FIELD_URL + "=?", new String[]{url});
+        db.delete(DbHelper.DATABASE_TABLE_NAME, DbHelper.FIELD_URL + "=?", new String[]{url});
     }
 
     public ArrayList<DbStarRecord> queryRecords() {
         ArrayList<DbStarRecord> list = new ArrayList<>();
-        String sql = "SELECT * FROM " + DATABASE_TABLE_NAME;
+        String sql = "SELECT * FROM " + DbHelper.DATABASE_TABLE_NAME;
         Cursor cursor;
         try {
             cursor = db.rawQuery(sql, null);
@@ -75,5 +73,37 @@ public class DbManager {
             e.printStackTrace();
         }
         return list;
+    }
+
+    public void insertWebRecord(DbWebRecord dbWebRecord) {
+        db.delete(DbHelper.DATABASE_WEB_TABLE_NAME, DbHelper.FIELD_WEB + "=?", new String[]{dbWebRecord.website});
+
+        ContentValues c = new ContentValues();
+        c.put(DbHelper.FIELD_WEB, dbWebRecord.website);
+        c.put(DbHelper.FIELD_WEBURL, dbWebRecord.url);
+        c.put(DbHelper.FIELD_SECTIONS, dbWebRecord.sections);
+        db.insert(DbHelper.DATABASE_WEB_TABLE_NAME, "", c);
+    }
+
+    public DbWebRecord queryWebRecord(String web) {
+        String sql = "SELECT * FROM " + DbHelper.DATABASE_WEB_TABLE_NAME;
+        Cursor cursor;
+        try {
+            cursor = db.rawQuery(sql, null);
+            while (cursor.moveToNext()) {
+                DbWebRecord item = new DbWebRecord();
+                item.website = cursor.getString(0);
+                item.url = cursor.getString(1);
+                item.sections = cursor.getString(2);
+                if (item.website.equals(web)) {
+                    return item;
+                }
+            }
+            cursor.close();
+        } catch (Exception e) {
+            Log.d(TAG, "exception in queryRecords is " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
     }
 }

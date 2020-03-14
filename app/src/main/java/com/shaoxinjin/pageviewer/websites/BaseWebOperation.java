@@ -3,6 +3,8 @@ package com.shaoxinjin.pageviewer.websites;
 import android.util.Log;
 import com.shaoxinjin.pageviewer.MainPage;
 import com.shaoxinjin.pageviewer.Util;
+import com.shaoxinjin.pageviewer.db.DbManager;
+import com.shaoxinjin.pageviewer.db.DbWebRecord;
 
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -113,6 +115,25 @@ public class BaseWebOperation implements WebOperation {
                     }
                 }
             });
+        }
+    }
+
+    public void initWebInfo(String url, String[] sections, String clazz) {
+        DbManager dbManager = DbManager.getInstance(mMainPage);
+        DbWebRecord dbWebRecord = dbManager.queryWebRecord(clazz);
+        if (dbWebRecord == null) {
+            dbWebRecord = new DbWebRecord();
+            dbWebRecord.website = clazz;
+            dbWebRecord.url = url;
+            dbWebRecord.sections = Util.concatString(sections);
+            dbManager.insertWebRecord(dbWebRecord);
+        }
+
+        URL_BASE = dbWebRecord.url;
+        URL_END = ".html";
+        mSectionInfo = new SectionInfo[sections.length];
+        for (int i = 0; i < mSectionInfo.length; i++) {
+            mSectionInfo[i] = new SectionInfo(sections[i], 1, 0);
         }
     }
 

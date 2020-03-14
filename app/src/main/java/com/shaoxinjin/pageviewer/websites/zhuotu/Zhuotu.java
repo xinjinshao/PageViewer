@@ -4,6 +4,7 @@ import com.shaoxinjin.pageviewer.MainPage;
 import com.shaoxinjin.pageviewer.Util;
 import com.shaoxinjin.pageviewer.websites.BaseWebOperation;
 import com.shaoxinjin.pageviewer.websites.WebOperationView;
+
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -23,17 +24,18 @@ public class Zhuotu extends BaseWebOperation {
 
     @Override
     public void initWebInfo() {
-        URL_BASE = "http://m.win4000.com";
-        URL_END = ".html";
-        mSectionInfo = new SectionInfo[]{
-                new SectionInfo("/meitu_2_", 1, 0),
-                new SectionInfo("/meitu_3_", 1, 0),
-                new SectionInfo("/meitu_4_", 1, 0),
-                new SectionInfo("/meitu_29_", 1, 0),
-                new SectionInfo("/meitu_31_", 1, 0),
-                new SectionInfo("/meitu_32_", 1, 0),
-                new SectionInfo("/meitu_47_", 1, 0),
-                new SectionInfo("/meitu_59_", 1, 0)};
+        String url = "http://m.win4000.com";
+        String[] sections = new String[] {
+            "/meitu_2_",
+            "/meitu_3_",
+            "/meitu_4_",
+            "/meitu_29_",
+            "/meitu_31_",
+            "/meitu_32_",
+            "/meitu_47_",
+            "/meitu_59_"
+        };
+        initWebInfo(url, sections, Zhuotu.class.getSimpleName());
         mWebOperationView = new ZhuotuView();
     }
 

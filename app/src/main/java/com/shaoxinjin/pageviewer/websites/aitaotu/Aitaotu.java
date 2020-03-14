@@ -26,10 +26,11 @@ public class Aitaotu extends BaseWebOperation {
 
     @Override
     public void initWebInfo() {
-        URL_BASE = "https://m.aitaotu.com";
-        URL_END = ".html";
-        mSectionInfo = new SectionInfo[]{
-            new SectionInfo("/guonei/list_", 1, 0)};
+        String url = "https://m.aitaotu.com";
+        String[] sections = new String[] {
+            "/guonei/list_"
+        };
+        initWebInfo(url, sections, Aitaotu.class.getSimpleName());
         mWebOperationView = new AitaotuView();
     }
 

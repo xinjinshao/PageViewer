@@ -4,6 +4,7 @@ import com.shaoxinjin.pageviewer.MainPage;
 import com.shaoxinjin.pageviewer.Util;
 import com.shaoxinjin.pageviewer.websites.BaseWebOperation;
 import com.shaoxinjin.pageviewer.websites.WebOperationView;
+
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -23,14 +24,15 @@ public class Xixi extends BaseWebOperation {
 
     @Override
     public void initWebInfo() {
-        URL_BASE = "http://m.xmkkzy.net";
-        URL_END = ".html";
-        mSectionInfo = new SectionInfo[]{
-            new SectionInfo("/44rtnet/sy/list_1_", 1, 0),
-            new SectionInfo("/44rtnet/xz/list_2_", 1, 0),
-            new SectionInfo("/44rtnet/zg/list_3_", 1, 0),
-            new SectionInfo("/44rtnet/rb/list_4_", 1, 0),
-            new SectionInfo("/44rtnet/ddrtys/list_5_", 1, 0)};
+        String url = "http://www.xmkkzy.net";
+        String[] sections = new String[] {
+            "/44rtnet/sy/list_1_",
+            "/44rtnet/xz/list_2_",
+            "/44rtnet/zg/list_3_",
+            "/44rtnet/rb/list_4_",
+            "/44rtnet/ddrtys/list_5_"
+        };
+        initWebInfo(url, sections, Xixi.class.getSimpleName());
         mWebOperationView = new XixiView();
     }
 

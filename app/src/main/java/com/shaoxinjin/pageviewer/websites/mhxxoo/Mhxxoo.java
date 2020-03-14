@@ -24,12 +24,13 @@ public class Mhxxoo extends BaseWebOperation {
 
     @Override
     public void initWebInfo() {
-        URL_BASE = "http://m.mhxxoo.com";
-        URL_END = ".html";
-        mSectionInfo = new SectionInfo[]{
-                new SectionInfo("/xieemanhua/list_1_", 1, 0),
-                new SectionInfo("/wuyiniao/list_2_", 1, 0),
-                new SectionInfo("/lifanacg/list_4_", 1, 0)};
+        String url = "http://m.ccn2.com";
+        String[] sections = new String[] {
+            "/benzi/list_1_",
+            "/wuyiniao/list_2_",
+            "/lifanacg/list_4_"
+        };
+        initWebInfo(url, sections, Mhxxoo.class.getSimpleName());
         mWebOperationView = new MhxxooView();
     }
 

@@ -51,4 +51,13 @@ public class Util {
             GlideApp.with(context).load(url).placeholder(R.drawable.ic_loading).into(imageView);
         }
     }
+
+    public static String concatString(String[] sections) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String section : sections) {
+            stringBuilder.append(section);
+            stringBuilder.append(";");
+        }
+        return stringBuilder.toString();
+    }
 }

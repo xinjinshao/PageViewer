@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.shaoxinjin.pageviewer.db.DbManager;
+import com.shaoxinjin.pageviewer.db.DbWebRecord;
 import com.shaoxinjin.pageviewer.websites.Star;
 import com.shaoxinjin.pageviewer.websites.WebOperation;
 import com.shaoxinjin.pageviewer.websites.WebOperationView;
@@ -89,6 +90,36 @@ public class MainPage extends AppCompatActivity
                     Log.d(TAG, "fab onclick updatePage");
                     mWebOperation.updatePage();
                 }
+            }
+        });
+
+        FloatingActionButton change = findViewById(R.id.fab_change);
+        change.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String clazz = getStringById(mCurrentID);
+                if (clazz.equals("")) {
+                    return;
+                }
+                final DbWebRecord dbWebRecord = DbManager.getInstance(MainPage.this).queryWebRecord(clazz);
+                if (dbWebRecord == null) {
+                    Log.d(TAG, "dbWebRecord is null, class is " + clazz);
+                    return;
+                }
+                String display = dbWebRecord.url + "|" + dbWebRecord.sections;
+                final EditText et = new EditText(MainPage.this);
+                et.setText(display);
+                new AlertDialog.Builder(MainPage.this).setTitle(clazz)
+                    .setView(et)
+                    .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            String[] text = et.getText().toString().split("\\|");
+                            dbWebRecord.url = text[0];
+                            dbWebRecord.sections = text[1];
+                            DbManager.getInstance(MainPage.this).insertWebRecord(dbWebRecord);
+                        }
+                    }).setNegativeButton("Cancel",null).show();
             }
         });
     }
